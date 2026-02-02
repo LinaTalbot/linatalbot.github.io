@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Memory Flow Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .controls h2 {
+            margin-bottom: 15px;
+            color: #00d4ff;
+            font-size: 1.3rem;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .query-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .query-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,212,255,0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .visualization {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .visualization {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel h3 {
+            color: #9b59b6;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel h3::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(180deg, #9b59b6, #00d4ff);
+            border-radius: 2px;
+        }
+
+        .memory-pools {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .memory-pool {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-pool::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
+        }
+
+        .memory-pool:hover::before {
+            transform: translateX(100%);
+        }
+
+        .memory-pool.factual {
+            border-left-color: #00d4ff;
+        }
+
+        .memory-pool.experiential {
+            border-left-color: #9b59b6;
+        }
+
+        .memory-pool.working {
+            border-left-color: #00ff88;
+        }
+
+        .memory-pool h4 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .memory-pool .count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .memory-pool.factual .count { color: #00d4ff; }
+        .memory-pool.experiential .count { color: #9b59b6; }
+        .memory-pool.working .count { color: #00ff88; }
+
+        .memory-pool .description {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flow-step {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .flow-step.active {
+            border: 2px solid #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin-bottom: 5px;
+            color: #00d4ff;
+        }
+
+        .step-content p {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .step-tokens {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #00ff88;
+            white-space: nowrap;
+        }
+
+        .arrow-down {
+            text-align: center;
+            color: #666;
+            font-size: 1.5rem;
+            margin: -5px 0;
+        }
+
+        .results-panel {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00d4ff;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item h5 {
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .result-item .meta {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .result-item .snippet {
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .info-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-section h3 {
+            color: #9b59b6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .info-card h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #aaa;
+        }
+
+        .highlight {
+            color: #00ff88;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Agent Memory Flow Visualizer</h1>
+        <p class="subtitle">Interactive demonstration of progressive disclosure and memory retrieval patterns</p>
+
+        <div class="controls">
+            <h2>Query Memory</h2>
+            <input type="text" class="query-input" id="queryInput" placeholder="Enter a query (e.g., 'authentication bug', 'API integration', 'database schema')...">
+            <div class="query-buttons">
+                <button class="btn btn-primary" onclick="runQuery()">Run Query</button>
+                <button class="btn btn-secondary" onclick="simulateProgressiveDisclosure()">Simulate Full Flow</button>
+                <button class="btn btn-secondary" onclick="clearResults()">Clear</button>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <div class="panel">
+                <h3>Memory Pools</h3>
+                <div class="memory-pools">
+                    <div class="memory-pool factual" id="pool-factual">
+                        <h4>Factual Memory</h4>
+                        <div class="count" id="count-factual">2,847</div>
+                        <div class="description">Static facts, code patterns, API docs, config values</div>
+                    </div>
+                    <div class="memory-pool experiential" id="pool-experiential">
+                        <h4>Experiential Memory</h4>
+                        <div class="count" id="count-experiential">1,423</div>
+                        <div class="description">Past tool uses, observations, session histories</div>
+                    </div>
+                    <div class="memory-pool working" id="pool-working">
+                        <h4>Working Memory</h4>
+                        <div class="count" id="count-working">7</div>
+                        <div class="description">Active context, current task, recent conversations</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Progressive Disclosure Flow</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step" id="step-1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Search Index</h4>
+                            <p>Lightweight search across all memory pools</p>
+                            <span class="step-tokens">~50-100 tokens/result</span>
+                        </div>
+                    </div>
+                    <div class="arrow-down">↓</div>
+                    <div class="flow-step" id="step-2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Timeline Context</h4>
+                            <p>Chronological context around interesting results</p>
+                            <span class="step-tokens">~200-400 tokens/result</span>
+                        </div>
+                    </div>
+                    <div class="arrow-down">↓</div>
+                    <div class="flow-step" id="step-3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Fetch Full Details</h4>
+                            <p>Complete observation data for filtered IDs only</p>
+                            <span class="step-tokens">~500-1000 tokens/result</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-panel" id="resultsPanel">
+                    <p style="color: #666; text-align: center;">Run a query to see results...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>How Progressive Disclosure Works</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🔍 The Problem</h4>
+                    <p>Searching large memory databases returns <span class="highlight">thousands of results</span>. Fetching full details for all of them would consume massive tokens and slow down responses.</p>
+                </div>
+                <div class="info-card">
+                    <h4>💡 The Solution</h4>
+                    <p>Use a <span class="highlight">3-layer workflow</span>: get compact index first, review relevant IDs, then fetch full details only for what's actually needed.</p>
+                </div>
+                <div class="info-card">
+                    <h4>📊 Token Savings</h4>
+                    <p>This approach provides <span class="highlight">~10x token savings</span> by filtering before fetching. Critical for cost-effective agent operations.</p>
+                </div>
+                <div class="info-card">
+                    <h4>🎯 Based On Research</h4>
+                    <p>Inspired by arXiv:2512.13564 "Memory in the Age of AI Agents" and the claude-mem progressive disclosure architecture.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const memoryData = {
+            factual: [
+                { id: 'F-001', title: 'JWT Authentication Pattern', meta: 'Code pattern • Updated 2 days ago', snippet: 'Standard JWT implementation with RS256 signing, 15-minute expiration, refresh token rotation...' },
+                { id: 'F-002', title: 'REST API Rate Limiting', meta: 'Architecture • Updated 1 week ago', snippet: 'Token bucket algorithm for rate limiting. Redis-backed with sliding window counter...' },
+                { id: 'F-003', title: 'PostgreSQL Connection Pooling', meta: 'Database • Updated 3 days ago', snippet: 'PgBouncer configuration for transaction pooling. Max connections per database...' },
+                { id: 'F-004', title: 'OAuth 2.0 Flows', meta: 'Security • Updated 5 days ago', snippet: 'Authorization code flow with PKCE. Client credentials for service-to-service auth...' },
+                { id: 'F-005', title: 'Docker Multi-Stage Builds', meta: 'DevOps • Updated 6 days ago', snippet: 'Optimized Dockerfile patterns: separate build and runtime stages, layer caching...' }
+            ],
+            experiential: [
+                { id: 'E-001', title: 'Fixed Auth Token Leak in Production', meta: 'Bugfix • Session #847 • 4 days ago', snippet: 'Discovered JWT secret in error logs. Implemented secret rotation and audit logging...' },
+                { id: 'E-002', title: 'Implemented Redis Cluster Migration', meta: 'Migration • Session #923 • 1 week ago', snippet: 'Migrated from single Redis to cluster. Handled slot rebalancing and connection pooling changes...' },
+                { id: 'E-003', title: 'Database Connection Pool Exhaustion', meta: 'Incident • Session #881 • 2 weeks ago', snippet: 'Diagnosed connection leak in worker threads. Added connection lifecycle monitoring...' }
+            ],
+            working: [
+                { id: 'W-001', title: 'Current Task: API Gateway Refactor', meta: 'Active • Started 2h ago', snippet: 'Refactoring API gateway to support gRPC proxy. Currently implementing request routing logic...' },
+                { id: 'W-002', title: 'Pending: Database Schema Migration', meta: 'Queued • Due tomorrow', snippet: 'Schema changes for user profile extensions. Need to coordinate with frontend team...' }
+            ]
+        };
+
+        function animateNumber(element, target) {
+            const start = parseInt(element.textContent.replace(/,/g, '')) || 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (target - start) * progress);
+                element.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function highlightStep(stepId) {
+            document.querySelectorAll('.flow-step').forEach(step => step.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        function highlightPool(poolType) {
+            document.querySelectorAll('.memory-pool').forEach(pool => {
+                pool.style.transform = 'scale(1)';
+                pool.style.boxShadow = 'none';
+            });
+            const pool = document.getElementById(`pool-${poolType}`);
+            if (pool) {
+                pool.style.transform = 'scale(1.02)';
+                pool.style.boxShadow = '0 0 20px rgba(0,212,255,0.3)';
+            }
+        }
+
+        function renderResults(results) {
+            const panel = document.getElementById('resultsPanel');
+            if (results.length === 0) {
+                panel.innerHTML = '<p style="color: #666; text-align: center;">No results found</p>';
+                return;
+            }
+            panel.innerHTML = results.map(r => `
+                <div class="result-item">
+                    <h5>${r.title} <span style="color:#888;font-size:0.8rem">${r.id}</span></h5>
+                    <div class="meta">${r.meta}</div>
+                    <div class="snippet">${r.snippet}</div>
+                </div>
+            `).join('');
+        }
+
+        function runQuery() {
+            const query = document.getElementById('queryInput').value.toLowerCase();
+            if (!query) {
+                alert('Please enter a query');
+                return;
+            }
+
+            // Simulate search with progressive disclosure
+            highlightStep('step-1');
+
+            // Step 1: Search (all results, lightweight)
+            setTimeout(() => {
+                const allResults = [
+                    ...memoryData.factual,
+                    ...memoryData.experiential,
+                    ...memoryData.working
+                ].filter(r => r.title.toLowerCase().includes(query) || r.snippet.toLowerCase().includes(query));
+
+                highlightPool(query.includes('auth') ? 'factual' : query.includes('fix') ? 'experiential' : 'working');
+                renderResults(allResults.map(r => ({...r, snippet: '[INDEX] ' + r.snippet.substring(0, 60) + '...'})));
+
+                // Step 2: Timeline (context around results)
+                setTimeout(() => {
+                    highlightStep('step-2');
+                    const relevantResults = allResults.slice(0, 3);
+                    renderResults(relevantResults.map(r => ({
+                        ...r,
+                        snippet: '[TIMELINE] ' + r.snippet
+                    })));
+
+                    // Step 3: Fetch full details
+                    setTimeout(() => {
+                        highlightStep('step-3');
+                        renderResults(relevantResults);
+                    }, 800);
+
+                }, 800);
+
+            }, 500);
+        }
+
+        function simulateProgressiveDisclosure() {
+            const queries = ['authentication', 'bug', 'migration'];
+            let i = 0;
+
+            function nextQuery() {
+                if (i >= queries.length) {
+                    document.getElementById('queryInput').value = '';
+                    return;
+                }
+                document.getElementById('queryInput').value = queries[i];
+                runQuery();
+                i++;
+                setTimeout(nextQuery, 2500);
+            }
+            nextQuery();
+        }
+
+        function clearResults() {
+            document.getElementById('resultsPanel').innerHTML = '<p style="color: #666; text-align: center;">Run a query to see results...</p>';
+            document.querySelectorAll('.flow-step').forEach(step => step.classList.remove('active'));
+            document.querySelectorAll('.memory-pool').forEach(pool => {
+                pool.style.transform = 'scale(1)';
+                pool.style.boxShadow = 'none';
+            });
+            document.getElementById('queryInput').value = '';
+        }
+
+        // Animate numbers on load
+        setTimeout(() => {
+            animateNumber(document.getElementById('count-factual'), 2847);
+            animateNumber(document.getElementById('count-experiential'), 1423);
+            animateNumber(document.getElementById('count-working'), 7);
+        }, 300);
+
+        // Enter key support
+        document.getElementById('queryInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') runQuery();
+        });
+    </script>
+</body>
+</html>
