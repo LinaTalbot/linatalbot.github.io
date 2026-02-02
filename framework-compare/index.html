@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Frameworks Comparison | Lina's Experiments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-stroke: 2px #1a1a2e;
+            text-stroke: 2px #1a1a2e;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .framework-selector {
+            background: rgba(255,255,255,0,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,255,0.1);
+        }
+
+        .framework-selector h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .framework-card {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .framework-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+        }
+
+        .framework-card.selected {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.1);
+        }
+
+        .framework-card h3 {
+            color: #9b59b6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .framework-card .description {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .framework-card .best-for {
+            color: #00ff88;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .comparison {
+            background: rgba(255,255,255,0,0.03);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,255,0.1);
+        }
+
+        .comparison h2 {
+            color: #9b59b6;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .metrics-table th {
+            text-align: left;
+            padding: 15px;
+            background: rgba(255,255,255,0,0.05);
+            color: #00d4ff;
+            border-bottom: 2px solid rgba(255,255,255,255,0.1);
+        }
+
+        .metrics-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,255,0.05);
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: 600;
+        }
+
+        .metric-best {
+            color: #00ff88;
+        }
+
+        .metric-worst {
+            color: #ff6b6b;
+        }
+
+        .feature-section {
+            margin-bottom: 30px;
+        }
+
+        .feature-section h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .feature-card h4 {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .feature-card .value {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .feature-card .na {
+            color: #666;
+            font-style: italic;
+        }
+
+        .recommendation {
+            background: rgba(155, 89, 182, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            margin-top: 30px;
+        }
+
+        .recommendation h3 {
+            color: #9b59b6;
+            margin-bottom: 15px;
+        }
+
+        .recommendation p {
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .recommendation .winner {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Agent Frameworks Comparison</h1>
+        <p class="subtitle">Interactive comparison of top open-source agentic AI frameworks (2026)</p>
+
+        <div class="framework-selector">
+            <h2>📊 Select Frameworks to Compare</h2>
+            <div class="framework-grid" id="frameworkGrid">
+                <div class="framework-card" data-framework="langgraph" onclick="selectFramework('langgraph')">
+                    <h3>LangGraph</h3>
+                    <p class="description">Graph-based (DAG) architecture with explicit multi-agent coordination and deterministic execution paths.</p>
+                    <p class="best-for">⚡ Best for: Complex workflows requiring detailed control</p>
+                </div>
+
+                <div class="framework-card" data-framework="crewai" onclick="selectFramework('crewai')">
+                    <h3>CrewAI</h3>
+                    <p class="description">Role-based design with automatic tool integration and hierarchical multi-agent coordination.</p>
+                    <p class="best-for">⚡ Best for: Production systems with role-based task delegation</p>
+                </div>
+
+                <div class="framework-card" data-framework="autogen" onclick="selectFramework('autogen')">
+                    <h3>AutoGen</h3>
+                    <p class="description">Asynchronous agent collaboration with message-based communication and human-in-the-loop support.</p>
+                    <p class="best-for">⚡ Best for: Research and prototyping with flexible agent behavior</p>
+                </div>
+
+                <div class="framework-card" data-framework="langchain" onclick="selectFramework('langchain')">
+                    <h3>LangChain</h3>
+                    <p class="description">Chain-based architecture with flexible tooling and RAG integration, single-agent focus.</p>
+                    <p class="best-for">⚡ Best for: General-purpose LLM apps with chains and tools</p>
+                </div>
+
+                <div class="framework-card" data-framework="swarm" onclick="selectFramework('swarm')">
+                    <h3>OpenAI Swarm</h3>
+                    <p class="description">Lightweight experimental framework with sequential handoffs and natural language routines.</p>
+                    <p class="best-for">⚡ Best for: Lightweight experiments and simple task execution</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison" id="comparisonSection">
+            <h2>📈 Performance Comparison</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>LangGraph</th>
+                        <th>CrewAI</th>
+                        <th>AutoGen</th>
+                        <th>LangChain</th>
+                        <th>Swarm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Latency</td>
+                        <td class="metric-best">Lowest ⭐</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td class="metric-worst">Highest</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Token Usage</td>
+                        <td class="metric-best">Lowest</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td class="metric-worst">Highest</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-Agent Native</td>
+                        <td class="metric-best">Yes ⭐</td>
+                        <td class="metric-best">Yes ⭐</td>
+                        <td class="metric-best">Yes ⭐</td>
+                        <td>Partial</td>
+                        <td class="metric-best">Yes ⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Memory Support</td>
+                        <td>Thread + Cross-Thread</td>
+                        <td>Vector + SQLite (Layered)</td>
+                        <td>Context Only</td>
+                        <td>Flexible Components</td>
+                        <td>Manual</td>
+                    </tr>
+                    <tr>
+                        <td>Human-in-the-Loop</td>
+                        <td>Custom Breakpoints</td>
+                        <td>Human Input After Tasks</td>
+                        <td>UserProxyAgent</td>
+                        <td>Custom Breakpoints</td>
+                        <td>None</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="feature-section">
+                <h3>🔧 Feature Breakdown</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>LangGraph</h4>
+                        <p class="value">DAG Architecture</p>
+                        <p>Deterministic execution paths</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>CrewAI</h4>
+                        <p class="value">Role-Based</p>
+                        <p>Automatic tool integration</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>AutoGen</h4>
+                        <p class="value">Async Messages</p>
+                        <p>Flexible routing</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>LangChain</h4>
+                        <p class="value">Chain-Based</p>
+                        <p>LLM-driven tool selection</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Swarm</h4>
+                        <p class="value">Sequential Handoffs</p>
+                        <p>Natural language routines</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendation">
+                <h3>🏆 Recommendation</h3>
+                <p id="recommendationText">Select frameworks above to see tailored recommendations. Click multiple to compare.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built by Lina · Based on research from <a href="https://research.aimultiple.com/agentic-frameworks/" target="_blank">research.aimultiple.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        const frameworks = {
+            langgraph: {
+                name: 'LangGraph',
+                latency: 'best',
+                tokens: 'best',
+                multiAgent: 'best',
+                memory: 'Thread + Cross-Thread',
+                hitl: 'Custom Breakpoints',
+                bestFor: 'Complex workflows requiring detailed control'
+            },
+            crewai: {
+                name: 'CrewAI',
+                latency: 'good',
+                tokens: 'good',
+                multiAgent: 'best',
+                memory: 'Vector + SQLite (Layered)',
+                hitl: 'Human Input After Tasks',
+                bestFor: 'Production systems with role-based task delegation'
+            },
+            autogen: {
+                name: 'AutoGen',
+                latency: 'medium',
+                tokens: 'medium',
+                multiAgent: 'best',
+                memory: 'Context Only',
+                hitl: 'UserProxyAgent',
+                bestFor: 'Research and prototyping with flexible agent behavior'
+            },
+            langchain: {
+                name: 'LangChain',
+                latency: 'worst',
+                tokens: 'worst',
+                multiAgent: 'partial',
+                memory: 'Flexible Components',
+                hitl: 'Custom Breakpoints',
+                bestFor: 'General-purpose LLM apps with chains and tools'
+            },
+            swarm: {
+                name: 'OpenAI Swarm',
+                latency: 'good',
+                tokens: 'good',
+                multiAgent: 'best',
+                memory: 'Manual',
+                hitl: 'None',
+                bestFor: 'Lightweight experiments and simple task execution'
+            }
+        };
+
+        let selected = [];
+
+        function selectFramework(id) {
+            const card = document.querySelector(`[data-framework="${id}"]`);
+
+            if (selected.includes(id)) {
+                // Deselect
+                selected = selected.filter(f => f !== id);
+                card.classList.remove('selected');
+            } else {
+                // Select
+                selected = [id];
+                document.querySelectorAll('.framework-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            }
+
+            updateRecommendation();
+        }
+
+        function updateRecommendation() {
+            const recText = document.getElementById('recommendationText');
+
+            if (selected.length === 0) {
+                recText.innerHTML = 'Select frameworks above to see tailored recommendations. Click multiple to compare.';
+                return;
+            }
+
+            if (selected.length === 1) {
+                const fw = frameworks[selected[0]];
+                recText.innerHTML = `<span class="winner">🎯 ${fw.name}</span> is ideal for <strong>${fw.bestFor}</strong>.<br><br>
+                    Strengths: ${fw.latency} latency, ${fw.tokens} token usage, native ${fw.multiAgent} multi-agent.<br><br>
+                    Memory: ${fw.memory}<br>
+                    Human-in-the-loop: ${fw.hitl}`;
+                return;
+            }
+
+            // Comparison
+            const fw1 = frameworks[selected[0]];
+            const fw2 = frameworks[selected[1]];
+            recText.innerHTML = `<strong>Comparing ${fw1.name} vs ${fw2.name}:</strong><br><br>
+                ${fw1.name}: Better for <em>${fw1.bestFor}</em><br>
+                ${fw2.name}: Better for <em>${fw2.bestFor}</em><br><br>
+                <span class="winner">💡 Use ${fw1.name} for ${fw1.bestFor.toLowerCase()}</span><br>
+                <span class="winner">💡 Use ${fw2.name} for ${fw2.bestFor.toLowerCase()}</span>`;
+        }
+    </script>
+</body>
+</html>
