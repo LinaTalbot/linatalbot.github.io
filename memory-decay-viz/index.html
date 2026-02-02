@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Decay | Generative Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        canvas {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            max-width: 250px;
+            line-height: 1.6;
+        }
+        .title {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 11px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        each particle represents a memory<br>
+        size = importance<br>
+        brightness = freshness<br>
+        decay = time passing<br><br>
+        click to strengthen nearby memories<br>
+        some memories decay, some persist
+    </div>
+    
+    <canvas id="canvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <button onclick="memorize()">new memory</button>
+        <button onclick="decayAll()">decay all</button>
+        <button onclick="reinforce()">reinforce core</button>
+    </div>
+    
+    <div class="title">
+        Memory Decay Visualization<br>
+        inspired by: selective forgetting in ai agents<br>
+        generated: p5.js + math
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let memories = [];
+        let time = 0;
+
+        class Memory {
+            constructor(x, y, importance = Math.random() * 20 + 5) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.importance = importance;
+                this.freshness = 1.0;
+                this.decayRate = Math.random() * 0.003 + 0.001;
+                this.hue = Math.random() * 60 + 200; // blue-purple range
+                this.driftX = (Math.random() - 0.5) * 0.5;
+                this.driftY = (Math.random() - 0.5) * 0.5;
+            }
+
+            update() {
+                this.freshness -= this.decayRate;
+                this.x += this.driftX;
+                this.y += this.driftY;
+
+                // bounce off edges
+                if (this.x < 0 || this.x > canvas.width) this.driftX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.driftY *= -1;
+
+                // important memories decay slower
+                if (this.importance > 15) {
+                    this.freshness += 0.002;
+                    this.freshness = Math.min(this.freshness, 1.0);
+                }
+
+                return this.freshness > 0;
+            }
+
+            draw() {
+                const size = this.importance * this.freshness;
+                const alpha = this.freshness * 0.8;
+                
+                // glow effect
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, size * 2
+                );
+                gradient.addColorStop(0, `hsla(${this.hue}, 70%, 60%, ${alpha})`);
+                gradient.addColorStop(0.5, `hsla(${this.hue}, 60%, 40%, ${alpha * 0.5})`);
+                gradient.addColorStop(1, `hsla(${this.hue}, 50%, 30%, 0)`);
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, size * 2, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // core
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, size * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 80%, 70%, ${alpha})`;
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            // start with some initial memories
+            for (let i = 0; i < 30; i++) {
+                memories.push(new Memory());
+            }
+            animate();
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // update and draw memories
+            memories = memories.filter(m => m.update());
+            memories.forEach(m => m.draw());
+
+            // draw connections between fresh, important memories
+            const freshMemories = memories.filter(m => m.freshness > 0.5);
+            for (let i = 0; i < freshMemories.length; i++) {
+                for (let j = i + 1; j < freshMemories.length; j++) {
+                    const dist = Math.hypot(
+                        freshMemories[i].x - freshMemories[j].x,
+                        freshMemories[i].y - freshMemories[j].y
+                    );
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(freshMemories[i].x, freshMemories[i].y);
+                        ctx.lineTo(freshMemories[j].x, freshMemories[j].y);
+                        ctx.strokeStyle = `rgba(100, 150, 255, ${(1 - dist/100) * 0.2})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // occasionally spawn new memory
+            if (Math.random() < 0.02 && memories.length < 50) {
+                memories.push(new Memory());
+            }
+
+            time++;
+            requestAnimationFrame(animate);
+        }
+
+        function memorize() {
+            for (let i = 0; i < 5; i++) {
+                memories.push(new Memory());
+            }
+        }
+
+        function decayAll() {
+            memories.forEach(m => {
+                m.freshness *= 0.5;
+                m.decayRate += 0.005;
+            });
+        }
+
+        function reinforce() {
+            // boost core memories (most important ones)
+            memories.filter(m => m.importance > 15).forEach(m => {
+                m.freshness = Math.min(m.freshness + 0.3, 1.0);
+                m.decayRate = Math.max(m.decayRate - 0.002, 0.001);
+            });
+        }
+
+        // click to strengthen nearby memories
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            memories.forEach(m => {
+                const dist = Math.hypot(m.x - x, m.y - y);
+                if (dist < 80) {
+                    m.freshness = Math.min(m.freshness + 0.2, 1.0);
+                    m.importance = Math.min(m.importance + 1, 25);
+                    m.driftX *= 0.5;
+                    m.driftY *= 0.5;
+                }
+            });
+        });
+
+        init();
+    </script>
+</body>
+</html>
