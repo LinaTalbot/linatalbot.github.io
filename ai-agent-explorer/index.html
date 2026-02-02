@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Explorer — Discover Agent Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+        
+        .search-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e0e0e0;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-bar input::placeholder {
+            color: #606060;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(233, 69, 96, 0.15);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(233, 69, 96, 0.3);
+            border-color: #e94560;
+            color: #e0e0e0;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-width: 150px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #e94560;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .card-title {
+            color: #e0e0e0;
+            font-size: 1.3rem;
+        }
+        
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #a0a0a0;
+        }
+        
+        .stars {
+            color: #feca57;
+        }
+        
+        .card-description {
+            color: #b0b0b0;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(233, 69, 96, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .visit-btn {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .visit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.4);
+        }
+        
+        .source {
+            color: #606060;
+            font-size: 0.85rem;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #606060;
+            font-size: 0.9rem;
+            padding: 2rem;
+            border-top: 1px solid rgba(233, 69, 96, 0.2);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .stats { gap: 1.5rem; }
+            .stat { min-width: 120px; padding: 1rem; }
+            .stat-number { font-size: 2rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI Agent Explorer</h1>
+            <p class="subtitle">Curated collection of AI agent tools & frameworks</p>
+        </header>
+        
+        <div class="search-bar">
+            <input type="text" placeholder="Search agents..." id="searchInput">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterBy('all')">All</button>
+                <button class="filter-btn" onclick="filterBy('visual')">🎨 Visual</button>
+                <button class="filter-btn" onclick="filterBy('learning')">📚 Learning</button>
+                <button class="filter-btn" onclick="filterBy('integration')">🔌 Integration</button>
+                <button class="filter-btn" onclick="filterBy('toolkit')">🧰 Toolkit</button>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Tools Listed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">160K+</div>
+                <div class="stat-label">Total Stars</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Categories</div>
+            </div>
+        </div>
+        
+        <div class="grid" id="agentGrid">
+            <a href="https://github.com/FlowiseAI/Flowise" class="card" data-category="visual">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">🎨</div>
+                    <div class="card-title">Flowise</div>
+                </div>
+                <div class="card-meta">
+                    <div class="meta-item"><span class="stars">⭐ 48.7K</span></div>
+                    <div class="meta-item">📅 Updated Feb 2</div>
+                </div>
+                <div class="card-description">
+                    Visual AI agent builder with a low-code/no-code approach. Create, connect, and deploy AI agents using an intuitive drag-and-drop interface. TypeScript-based with active development.
+                </div>
+                <div class="tags">
+                    <span class="tag">TypeScript</span>
+                    <span class="tag">Low-Code</span>
+                    <span class="tag">React</span>
+                </div>
+                <div class="card-footer">
+                    <a href="https://github.com/FlowiseAI/Flowise" class="visit-btn" target="_blank">Explore →</a>
+                </div>
+            </a>
+            
+            <a href="https://github.com/microsoft/ai-agents-for-beginners" class="card" data-category="learning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">📚</div>
+                    <div class="card-title">AI Agents for Beginners</div>
+                </div>
+                <div class="card-meta">
+                    <div class="meta-item"><span class="stars">⭐ 49.8K</span></div>
+                    <div class="meta-item">🏢 Microsoft</div>
+                </div>
+                <div class="card-description">
+                    Official Microsoft 12-lesson beginner's course for building AI agents. Jupyter Notebooks format with structured curriculum. Perfect starting point for newcomers to agentic AI.
+                </div>
+                <div class="tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">Jupyter</span>
+                    <span class="tag">Beginner-Friendly</span>
+                </div>
+                <div class="card-footer">
+                    <a href="https://github.com/microsoft/ai-agents-for-beginners" class="visit-btn" target="_blank">Start Learning →</a>
+                </div>
+            </a>
+            
+            <a href="https://github.com/ed-donner/agents" class="card" data-category="learning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🎓</div>
+                    <div class="card-title">Agentic AI Engineering Course</div>
+                </div>
+                <div class="card-meta">
+                    <div class="meta-item"><span class="stars">⭐ 3.8K</span></div>
+                    <div class="meta-item">📖 Complete Course</div>
+                </div>
+                <div class="card-description">
+                    Comprehensive Agentic AI Engineering Course with structured curriculum approach. Covers building autonomous agents from scratch with hands-on exercises and real-world examples.
+                </div>
+                <div class="tags">
+                    <span class="tag">Course</span>
+                    <span class="tag">Curriculum</span>
+                    <span class="tag">Hands-On</span>
+                </div>
+                <div class="card-footer">
+                    <a href="https://github.com/ed-donner/agents" class="visit-btn" target="_blank">Take Course →</a>
+                </div>
+            </a>
+            
+            <a href="https://github.com/activepieces/activepieces" class="card" data-category="integration">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">🔌</div>
+                    <div class="card-title">ActivePieces</div>
+                </div>
+                <div class="card-meta">
+                    <div class="meta-item"><span class="stars">⭐ 20.6K</span></div>
+                    <div class="meta-item">🔗 ~400 MCPs</div>
+                </div>
+                <div class="card-description">
+                    AI Agents & MCP (Model Context Protocol) integration platform. Workflow automation with extensive MCP server ecosystem. TypeScript-based and production-ready.
+                </div>
+                <div class="tags">
+                    <span class="tag">MCP</span>
+                    <span class="tag">Workflows</span>
+                    <span class="tag">TypeScript</span>
+                </div>
+                <div class="card-footer">
+                    <a href="https://github.com/activepieces/activepieces" class="visit-btn" target="_blank">Integrate →</a>
+                </div>
+            </a>
+            
+            <a href="https://github.com/vercel/ai" class="card" data-category="toolkit">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🧰</div>
+                    <div class="card-title">Vercel AI SDK</div>
+                </div>
+                <div class="card-meta">
+                    <div class="meta-item"><span class="stars">⭐ 21.4K</span></div>
+                    <div class="meta-item">⚡ Next.js</div>
+                </div>
+                <div class="card-description">
+                    AI Toolkit from Next.js creators. TypeScript-focused SDK for production-ready agent building. Seamless integration with Vercel's infrastructure and deployment platform.
+                </div>
+                <div class="tags">
+                    <span class="tag">SDK</span>
+                    <span class="tag">TypeScript</span>
+                    <span class="tag">Production-Ready</span>
+                </div>
+                <div class="card-footer">
+                    <a href="https://github.com/vercel/ai" class="visit-btn" target="_blank">Build →</a>
+                </div>
+            </a>
+        </div>
+        
+        <div class="last-updated">
+            <p>Last researched and curated on <strong>February 2, 2026</strong></p>
+            <p style="margin-top: 0.5rem; color: #808080;">Curated by Lina 🐙</p>
+        </div>
+    </div>
+    
+    <script>
+        function filterBy(category) {
+            const cards = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease-in';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-description').textContent.toLowerCase();
+                const tags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase()).join(' ');
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
