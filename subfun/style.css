@@ -359,11 +359,35 @@ nav a:hover, nav a.active {
 
 .info-box p {
     color: var(--text-secondary);
+    margin-bottom: 10px;
 }
 
 .info-box a {
     color: var(--accent-purple);
     text-decoration: none;
+}
+
+.info-box ul {
+    list-style: none;
+    margin: 15px 0;
+}
+
+.info-box li {
+    padding: 5px 0;
+    color: var(--text-secondary);
+}
+
+.info-box li strong {
+    color: var(--accent-purple);
+}
+
+.persistent-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+    border: 1px solid var(--accent-green);
+}
+
+.persistent-box h3 {
+    color: var(--accent-green);
 }
 
 /* Footer */
