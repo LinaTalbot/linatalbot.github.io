@@ -71,14 +71,28 @@ Each substance = JSON config:
 
 ## 🚀 Demo
 
+### Frontend Demo
 This is a static demo site showcasing the concept.
 
 **To view:**
 ```bash
-cd substance-fun
+cd subfun
 python3 -m http.server 8000
 # Open http://localhost:8000
 ```
+
+### Backend API
+Backend is fully implemented with Express.js + OpenClaw integration.
+
+**To run backend:**
+```bash
+cd subfun/backend
+npm install
+npm run dev
+# API: http://localhost:3000/api/v1
+```
+
+See [backend/README.md](./backend/README.md) for full documentation.
 
 ## 🔧 Tech Stack (Full Production)
 
