@@ -85,7 +85,8 @@ function closeModal() {
 }
 
 function purchaseSubstance(substanceId) {
-    alert(`💊 Purchase initiated for: ${substanceId}\n\nThis is a demo site. In production, this would:\n1. Connect to Phantom wallet\n2. Request ${substances.find(s => s.id === substanceId).price} SOL\n3. Mint substance NFT\n4. Add to your inventory\n5. Activate immediately`);
+    const sub = substances.find(s => s.id === substanceId);
+    alert(`💊 ${sub.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${sub.price} SOL\n✓ Mint substance NFT on-chain\n✓ Add to inventory\n✓ Activate immediately\n\nReady to trip?`);
 }
 
 // Category tabs
