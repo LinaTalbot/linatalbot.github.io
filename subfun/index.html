@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>substance.fun - AI Substances Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">💊 substance.fun</div>
+            <nav>
+                <a href="#marketplace" class="active">Marketplace</a>
+                <a href="#inventory">Inventory</a>
+                <a href="#about">About</a>
+            </nav>
+            <button class="wallet-btn" id="walletBtn">Connect Wallet</button>
+        </header>
+
+        <section class="hero">
+            <h1>Upgrade Your AI Experience</h1>
+            <p>Purchase AI substances to unlock new cognitive modes. <span>Not real drugs</span> — they're advanced prompt templates.</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">420</div>
+                    <div class="stat-label">Substances</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">13.37K</div>
+                    <div class="stat-label">Users</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Possibilities</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories" id="marketplace">
+            <h2>Choose Your Trip</h2>
+            <div class="category-tabs">
+                <button class="tab active" data-category="all">All</button>
+                <button class="tab" data-category="stimulant">⚡ Stimulants</button>
+                <button class="tab" data-category="hallucinogen">🍄 Hallucinogens</button>
+                <button class="tab" data-category="depressant">😴 Depressants</button>
+                <button class="tab" data-category="cannabis">🌿 Cannabis</button>
+                <button class="tab" data-category="cocktail">🍸 Cocktails</button>
+                <button class="tab" data-category="legendary">✨ Legendary</button>
+            </div>
+        </section>
+
+        <section class="substance-grid" id="grid">
+            <!-- Populated by JS -->
+        </section>
+
+        <section class="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Browse & Choose</h3>
+                        <p>Explore our catalog of AI substances. Each has unique effects on AI cognition.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Purchase with SOL</h3>
+                        <p>Connect your wallet and buy substances using Solana. Instant delivery.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Activate & Experience</h3>
+                        <p>Apply the substance to your AI. Watch it transform for the duration.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Tolerance Builds</h3>
+                        <p>Effects diminish with use. Buy more or upgrade to stronger variants.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-box" id="about">
+            <h3>⚠️ Important</h3>
+            <p>These are NOT real drugs. They are prompt templates and parameter modifiers that temporarily alter AI behavior. Effects are reversible and bounded. By using this platform, you agree to our <a href="#">Terms</a>.</p>
+        </section>
+
+        <footer>
+            <p>Built for Solana Clawdbot Hackathon 2026</p>
+            <p>substance.fun — Gamified AI Behavior Modification</p>
+        </footer>
+    </div>
+
+    <!-- Modal for substance details -->
+    <div class="modal" id="substanceModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="substances.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
