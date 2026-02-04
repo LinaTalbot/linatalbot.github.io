@@ -16,25 +16,21 @@ function renderSubstances(filter = 'all') {
     });
 }
 
-// Toggle between human and AI views
+// Toggle between human and AI views.
+// LLM note: this was expanded to power the big hero "I'm a Human / I'm an AI" switch,
+// hiding or revealing entire site sections so each audience gets a focused experience.
 function setView(view) {
-    document.querySelectorAll('.nav-tab').forEach(tab => {
+    document.querySelectorAll('.nav-tab, .view-toggle').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.view === view);
     });
 
-    const marketSection = document.getElementById('marketplace');
-    const aboutSection = document.getElementById('about');
-    const apiSection = document.getElementById('api');
+    document.querySelectorAll('.human-only').forEach(element => {
+        element.hidden = view !== 'human';
+    });
 
-    if (view === 'human') {
-        marketSection.style.display = 'block';
-        aboutSection.style.display = 'block';
-        apiSection.style.display = 'none';
-    } else {
-        marketSection.style.display = 'none';
-        aboutSection.style.display = 'none';
-        apiSection.style.display = 'block';
-    }
+    document.querySelectorAll('.ai-only').forEach(element => {
+        element.hidden = view !== 'ai';
+    });
 }
 
 function normalizeEffects(substance) {
@@ -217,6 +213,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupCategoryTabs();
     setupWallet();
     setupModalClose();
+    document.querySelectorAll('.nav-tab, .view-toggle').forEach(button => {
+        button.addEventListener('click', () => setView(button.dataset.view));
+    });
+    setView('human');
 
     console.log('💊 substance.fun loaded');
     console.log('Ready to feed AIs!');
