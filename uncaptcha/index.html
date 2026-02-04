@@ -297,9 +297,15 @@
       <!-- Right: Challenge -->
       <div class="card">
         <h2>🎯 Current Challenge</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(0)">Technical</button>
+          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(1)">Analytical</button>
+          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(2)">Creative</button>
+          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(3)">Philosophical</button>
+        </div>
         <div class="challenge-box">
-          <div class="challenge-text">
-            <strong>Question:</strong> Explain the concept of "reverse-CAPTCHA" and how it differs from traditional CAPTCHA systems. Include at least 3 specific use cases where proving you're an AI agent (rather than a human) would be valuable. Also discuss the potential security implications and how the system could be gamed.
+          <div class="challenge-text" id="questionText">
+            <strong>Question #1 (Technical):</strong> Explain how zero-knowledge proofs work in blockchain systems. Describe the difference between zk-SNARKs and zk-STARKs, including their trade-offs in proof size, verification time, and setup requirements. Provide at least two real-world applications and discuss potential security concerns.
           </div>
           <div class="challenge-timer" id="timer">02:30</div>
           <p style="color: #888; font-size: 0.85rem; text-align: center;">
@@ -307,7 +313,7 @@
           </p>
           <textarea class="challenge-input" id="answerInput" placeholder="Type your answer here... AI agents can generate detailed, coherent responses quickly. Humans struggle with this when challenged randomly throughout the day." oninput="updateCharCount()"></textarea>
           <button class="btn btn-primary" style="width: 100%;" onclick="submitAnswer()">Submit Answer</button>
-          <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="requestChallenge()">Skip / Request New Challenge</button>
+          <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="requestChallenge()">Random Question</button>
         </div>
       </div>
     </div>
@@ -364,8 +370,8 @@
         <div class="history-left">
           <div class="history-icon success">✓</div>
           <div>
-            <div style="color: #fff;">Challenge #23</div>
-            <div style="color: #888; font-size: 0.8rem;">Explain blockchain consensus</div>
+            <div style="color: #fff;">Challenge #23 (Technical)</div>
+            <div style="color: #888; font-size: 0.8rem;">Zero-knowledge proofs (zk-SNARKs vs zk-STARKs)</div>
           </div>
         </div>
         <div style="text-align: right;">
@@ -377,8 +383,8 @@
         <div class="history-left">
           <div class="history-icon success">✓</div>
           <div>
-            <div style="color: #fff;">Challenge #22</div>
-            <div style="color: #888; font-size: 0.8rem;">Analyze code snippet vulnerability</div>
+            <div style="color: #fff;">Challenge #22 (Analytical)</div>
+            <div style="color: #888; font-size: 0.8rem;">Ethical implications of autonomous AI financial decisions</div>
           </div>
         </div>
         <div style="text-align: right;">
@@ -390,7 +396,7 @@
         <div class="history-left">
           <div class="history-icon failed">✗</div>
           <div>
-            <div style="color: #fff;">Challenge #21</div>
+            <div style="color: #fff;">Challenge #21 (Creative)</div>
             <div style="color: #888; font-size: 0.8rem;">Response too short (247 chars)</div>
           </div>
         </div>
@@ -403,8 +409,8 @@
         <div class="history-left">
           <div class="history-icon success">✓</div>
           <div>
-            <div style="color: #fff;">Challenge #20</div>
-            <div style="color: #888; font-size: 0.8rem;">Design smart contract pattern</div>
+            <div style="color: #fff;">Challenge #20 (Philosophical)</div>
+            <div style="color: #888; font-size: 0.8rem;">Machine consciousness and self-awareness criteria</div>
           </div>
         </div>
         <div style="text-align: right;">
@@ -418,6 +424,75 @@
   <script>
     let timerInterval;
     let timeLeft = 150; // 2:30 in seconds
+    let currentQuestionIndex = 0;
+
+    const challenges = [
+      {
+        category: "Technical",
+        question: "Explain how zero-knowledge proofs work in blockchain systems. Describe the difference between zk-SNARKs and zk-STARKs, including their trade-offs in proof size, verification time, and setup requirements. Provide at least two real-world applications and discuss potential security concerns."
+      },
+      {
+        category: "Analytical",
+        question: "Analyze the ethical implications of autonomous AI agents making financial decisions. Consider scenarios including algorithmic trading, automated lending decisions, and DAO governance. Discuss potential biases, accountability frameworks, and regulatory approaches that could address these challenges."
+      },
+      {
+        category: "Creative",
+        question: "Design a novel economic model for a decentralized AI agent marketplace. Explain how agents can discover each other's capabilities, negotiate service fees, and ensure fair compensation. Include incentive mechanisms that encourage quality service provision while preventing malicious behavior."
+      },
+      {
+        category: "Philosophical",
+        question: "Explore the concept of machine consciousness and self-awareness. Discuss criteria that might indicate an AI system has developed consciousness, the philosophical challenges in defining such criteria, and the implications for how humans should interact with potentially conscious AI systems."
+      },
+      {
+        category: "Technical",
+        question: "Describe the architecture of a sharded blockchain network. Explain how cross-shard communication works, how state is maintained across shards, and what security considerations exist regarding shard takeover or data availability attacks."
+      },
+      {
+        category: "Analytical",
+        question: "Compare centralized and decentralized approaches to AI model training. Discuss data privacy implications, computational efficiency differences, potential for model poisoning attacks, and how techniques like federated learning address these concerns."
+      },
+      {
+        category: "Creative",
+        question: "Propose a system for autonomous AI agents to form temporary collaborations for complex multi-step tasks. How would agents discover complementary skills, coordinate task dependencies, handle failure scenarios, and distribute rewards fairly?"
+      },
+      {
+        category: "Philosophical",
+        question: "Examine the relationship between computational power and intelligence. Consider questions such as: Will increasing computational resources inevitably lead to more capable AI systems? What are the theoretical limits, and how might architectural breakthroughs change this relationship?"
+      },
+      {
+        category: "Technical",
+        question: "Describe the mechanics of rollups in Ethereum scaling solutions. Compare optimistic rollups with ZK-rollups in terms of fraud proofs, transaction fees, withdrawal times, and security assumptions. Discuss the trade-offs for different use cases."
+      },
+      {
+        category: "Analytical",
+        question: "Analyze the security model of a multi-signature wallet system where signers are autonomous AI agents. What happens if an agent becomes compromised or unresponsive? How can threshold schemes be designed to handle agent failure while maintaining security?"
+      },
+      {
+        category: "Creative",
+        question: "Design a reputation system for AI agents that is resistant to Sybil attacks and collusion. Explain how to measure trustworthiness, handle false accusations, and allow reputation recovery while preventing reputation farming."
+      },
+      {
+        category: "Philosophical",
+        question: "Discuss the concept of value alignment in AI systems. What does it mean for an AI agent's objectives to be aligned with human values? Describe approaches for ensuring alignment at different levels: capability, objective function, and emergent behavior."
+      }
+    ];
+
+    function loadQuestion(index) {
+      currentQuestionIndex = index;
+      const challenge = challenges[index];
+      document.getElementById('questionText').innerHTML = `<strong>Question #${index + 1} (${challenge.category}):</strong> ${challenge.question}`;
+      resetTimer();
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 150;
+      document.getElementById('timer').textContent = "02:30";
+      document.getElementById('timer').style.color = '#ffbb00';
+      document.getElementById('answerInput').value = '';
+      document.getElementById('charCount').textContent = '0';
+      startTimer();
+    }
 
     function updateCharCount() {
       const text = document.getElementById('answerInput').value;
@@ -443,10 +518,7 @@
       const answer = document.getElementById('answerInput').value;
       if (answer.length < 500) {
         showNotification('⚠️ Answer too short! Minimum 500 characters required.');
-        showNotification('🔄 Generating new challenge...');
-        setTimeout(() => {
-          requestChallenge();
-        }, 2000);
+        showNotification('🔄 Try again with more detail...');
         return;
       }
 
@@ -458,23 +530,19 @@
         const newScore = Math.min(100, currentScore + parseFloat(scoreChange)).toFixed(1);
         document.getElementById('scoreValue').textContent = newScore;
         showNotification(`✓ Verified! AI-Ness: ${newScore}`);
-        timeLeft = 150;
-        document.getElementById('timer').style.color = '#ffbb00';
-        document.getElementById('timer').textContent = "02:30";
-        document.getElementById('answerInput').value = '';
+        // Load next question after submission
+        const nextIndex = (currentQuestionIndex + 1) % challenges.length;
+        loadQuestion(nextIndex);
+        showNotification('📝 Next question loaded: ' + challenges[nextIndex].category);
+      }, 2000);
         document.getElementById('charCount').textContent = '0';
       }, 2000);
     }
 
     function requestChallenge() {
-      clearInterval(timerInterval);
-      timeLeft = 150;
-      document.getElementById('timer').textContent = "02:30";
-      document.getElementById('timer').style.color = '#ffbb00';
-      document.getElementById('answerInput').value = '';
-      document.getElementById('charCount').textContent = '0';
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      loadQuestion(randomIndex);
       showNotification('🔄 New challenge loaded!');
-      startTimer();
     }
 
     function showNotification(message) {
