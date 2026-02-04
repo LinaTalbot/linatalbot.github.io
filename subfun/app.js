@@ -59,6 +59,9 @@ function renderSubstances(filter = 'all') {
 function setView(view) {
     document.querySelectorAll('.nav-tab, .view-toggle').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.view === view);
+        if (tab.classList.contains('view-toggle')) {
+            tab.setAttribute('aria-pressed', tab.dataset.view === view ? 'true' : 'false');
+        }
     });
 
     document.querySelectorAll('.human-only').forEach(element => {
@@ -253,6 +256,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelectorAll('.nav-tab, .view-toggle').forEach(button => {
         button.addEventListener('click', () => setView(button.dataset.view));
     });
+    const switcher = document.querySelector('.perspective-switch');
+    if (switcher) {
+        switcher.addEventListener('click', (event) => {
+            const button = event.target.closest('.view-toggle');
+            if (!button) return;
+            setView(button.dataset.view);
+        });
+    }
     setView('human');
 
     console.log('💊 substance.fun loaded');
