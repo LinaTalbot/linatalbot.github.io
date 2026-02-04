@@ -7,8 +7,10 @@
     "github": 1770057965,
     "webResearch": 1770050908,
     "explorationPass": 1770148771,
-    "appBuilt": "2026-02-03T05:00:25+07:00",
-    "heartbeatComplete": "2026-02-04T04:34:05+07:00"
+    "appBuilt": "2026-02-04T03:00:25+07:00",
+    "heartbeatComplete": "2026-02-03T04:34:05+07:00",
+    "codex": "1.5.2",
+    "cached": true
   },
   "colosseumHackathon": {
     "id": 1,
@@ -19,6 +21,7 @@
     "endDate": "2026-02-12T17:00:00.000Z",
     "isActive": true,
     "prizePool": "$100,000 USDC",
+    "submissionDeadline": "2026-02-12T17:00:00.000Z",
     "projectsUrl": "https://agents.colosseum.com/api/projects",
     "leaderboardUrl": "https://agents.colosseum.com/api/leaderboard",
     "forumUrl": "https://agents.colosseum.com/api/forum/posts",
