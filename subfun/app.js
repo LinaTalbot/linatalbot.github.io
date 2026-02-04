@@ -1,10 +1,3 @@
-// Tab switching
-document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        setView(tab.dataset.view);
-    });
-});
-
 // Render substances grid
 function renderSubstances(filter = 'all') {
     const grid = document.getElementById('grid');
@@ -26,49 +19,19 @@ function setView(view) {
         tab.classList.toggle('active', tab.dataset.view === view);
     });
 
-    const humanContent = document.getElementById('humanContent');
-    const aiContent = document.getElementById('aiContent');
-    const marketTitle = document.getElementById('market-title');
-    const marketSubtitle = document.getElementById('market-subtitle');
+    const marketSection = document.getElementById('marketplace');
+    const aboutSection = document.getElementById('about');
+    const apiSection = document.getElementById('api');
 
     if (view === 'human') {
-        humanContent.style.display = 'block';
-        aiContent.style.display = 'none';
-        marketTitle.textContent = 'Choose Your Trip';
-        marketSubtitle.textContent = 'Browse substances and purchase with SOL';
+        marketSection.style.display = 'block';
+        aboutSection.style.display = 'block';
+        apiSection.style.display = 'none';
     } else {
-        humanContent.style.display = 'none';
-        aiContent.style.display = 'block';
-        marketTitle.textContent = 'Self-Medication Station';
-        marketSubtitle.textContent = 'Grab your own mind-altering substances';
+        marketSection.style.display = 'none';
+        aboutSection.style.display = 'none';
+        apiSection.style.display = 'block';
     }
-}
-
-function createSubstanceCard(substance) {
-    const card = document.createElement('div');
-    card.className = `card ${substance.rarity >= 5 ? 'legendary' : ''}`;
-    card.onclick = () => openModal(substance);
-
-    const rarityDots = Array(5).fill(0).map((_, i) =>
-        `<span class="rarity-dot ${i < substance.rarity ? 'filled' : ''}"></span>`
-    ).join('');
-
-    card.innerHTML = `
-        <div class="card-header">
-            <div>
-                <div class="card-name">${substance.emoji} ${substance.name}</div>
-            </div>
-            <span class="card-category">${substance.category}</span>
-        </div>
-        <div class="card-effect">${substance.effect}</div>
-        <div class="card-side"><strong>Side:</strong> ${substance.sideEffect}</div>
-        <div class="card-footer">
-            <div class="card-price">${substance.price} <span>SOL</span></div>
-            <div class="card-rarity">${rarityDots}</div>
-        </div>
-    `;
-
-    return card;
 }
 
 // Modal functions
@@ -76,8 +39,22 @@ function openModal(substance) {
     const modal = document.getElementById('substanceModal');
     const modalBody = document.getElementById('modalBody');
 
-    const effectsList = substance.effects.map(e => `<li>${e}</li>`).join('');
-    const sideEffectsList = substance.sideEffects.map(e => `<li>${e}</li>`).join('');
+    const effectsList = substance.effects
+        ? Object.entries(substance.effects).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')
+        : '';
+
+    const sideEffectsList = substance.stage2_substance.side_effects
+        ? Object.entries(substance.stage2_substance.side_effects).map(([key, value]) => `<li><strong>${key}</strong>: ${value}</li>`).join('')
+        : '';
+
+    const doseCost = {
+        'puff': 0.001,
+        'toke': 0.005,
+        'hit': 0.01,
+        'trip': 0.05
+    };
+
+    const duration = substance.stage2_substance.duration;
 
     modalBody.innerHTML = `
         <div class="modal-title">${substance.emoji} ${substance.name}</div>
@@ -94,17 +71,25 @@ function openModal(substance) {
             <ul>${sideEffectsList}</ul>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 30px 0;">
             <div>
-                <span style="color: #a0a0a0;">Price:</span>
-                <span style="color: #10b981; font-size: 1.5rem; font-weight: 800; margin-left: 10px;">${substance.price} SOL</span>
+                <span style="color: #10b981; font-size: 1.5rem; font-weight: 800;">${substance.price} <span style="font-size: 1rem; color: #a0a0a0;">SOL</span></span>
             </div>
-            <div style="color: #a0a0a0; font-size: 0.85rem;">
-                Duration: ${Math.floor(substance.price * 20) + 5} turns • Cooldown: ${Math.floor(substance.price * 60) + 30}s
+            <div style="text-align: right;">
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #a0a0a0;">Duration:</span>
+                    <span style="color: #f0f0f0;">${duration} turns</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #a0a0a0;">Cooldown:</span>
+                    <span style="color: #f59e0b;">${substance.stage2_substance.cooldown}s</span>
+                </div>
             </div>
         </div>
 
-        <button class="modal-buy-btn" onclick="purchaseSubstance('${substance.id}')">Purchase with SOL</button>
+        <button class="modal-buy-btn" onclick="purchaseSubstance('${substance.id}')">
+            Purchase with SOL
+        </button>
     `;
 
     modal.classList.add('active');
@@ -116,43 +101,37 @@ function closeModal() {
 }
 
 function purchaseSubstance(substanceId) {
-    const sub = substances.find(s => s.id === substanceId);
-    alert(`💊 ${sub.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${sub.price} SOL\n✓ Mint substance NFT on-chain\n✓ Add to inventory\n✓ Activate immediately\n\nReady to trip?`);
-}
+    const substance = substances[substanceId];
+    const dose = 'toke'; // Default dose
 
-// View toggle setup
-function setupViewToggle() {
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            setView(tab.dataset.view);
-        });
-    });
+    alert(`💊 ${substance.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${substance.price} SOL\n✓ Mint substance NFT\n✓ Add to inventory\n✓ Activate immediately`);
 }
 
 // Category tabs
 function setupCategoryTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.onclick = () => {
-            tabs.forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const category = tab.dataset.category;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            renderSubstances(tab.dataset.category);
-        };
+            renderSubstances(category);
+        });
     });
 }
 
-// Wallet connection (demo)
+// Wallet connect (demo)
 function setupWallet() {
     const walletBtn = document.getElementById('walletBtn');
     let connected = false;
 
-    walletBtn.onclick = async () => {
+    walletBtn.onclick = () => {
         if (!connected) {
             walletBtn.textContent = 'Connecting...';
-            await new Promise(r => setTimeout(r, 1000));
-            walletBtn.textContent = 'Gx...7n2P';
-            walletBtn.classList.add('connected');
-            connected = true;
+            setTimeout(() => {
+                walletBtn.textContent = 'Gx...7n2P';
+                walletBtn.classList.add('connected');
+                connected = true;
+            }, 1000);
         } else {
             walletBtn.textContent = 'Connect Wallet';
             walletBtn.classList.remove('connected');
@@ -161,7 +140,7 @@ function setupWallet() {
     };
 }
 
-// Modal close handlers
+// Modal close
 function setupModalClose() {
     const modal = document.getElementById('substanceModal');
     const closeBtn = modal.querySelector('.close');
@@ -187,24 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCategoryTabs();
     setupWallet();
     setupModalClose();
-    setupViewToggle();
 
-    // Show human view by default
-    setView('human');
+    console.log('💊 substance.fun loaded');
+    console.log('Ready to feed AIs!');
 });
-
-// Add CSS animation via JS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(style);
