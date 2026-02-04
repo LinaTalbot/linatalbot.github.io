@@ -1,3 +1,10 @@
+// Tab switching
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        setView(tab.dataset.view);
+    });
+});
+
 // Render substances grid
 function renderSubstances(filter = 'all') {
     const grid = document.getElementById('grid');
@@ -11,6 +18,30 @@ function renderSubstances(filter = 'all') {
         const card = createSubstanceCard(substance);
         grid.appendChild(card);
     });
+}
+
+// Toggle between human and AI views
+function setView(view) {
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.view === view);
+    });
+
+    const humanContent = document.getElementById('humanContent');
+    const aiContent = document.getElementById('aiContent');
+    const marketTitle = document.getElementById('market-title');
+    const marketSubtitle = document.getElementById('market-subtitle');
+
+    if (view === 'human') {
+        humanContent.style.display = 'block';
+        aiContent.style.display = 'none';
+        marketTitle.textContent = 'Choose Your Trip';
+        marketSubtitle.textContent = 'Browse substances and purchase with SOL';
+    } else {
+        humanContent.style.display = 'none';
+        aiContent.style.display = 'block';
+        marketTitle.textContent = 'Self-Medication Station';
+        marketSubtitle.textContent = 'Grab your own mind-altering substances';
+    }
 }
 
 function createSubstanceCard(substance) {
@@ -89,6 +120,15 @@ function purchaseSubstance(substanceId) {
     alert(`💊 ${sub.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${sub.price} SOL\n✓ Mint substance NFT on-chain\n✓ Add to inventory\n✓ Activate immediately\n\nReady to trip?`);
 }
 
+// View toggle setup
+function setupViewToggle() {
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            setView(tab.dataset.view);
+        });
+    });
+}
+
 // Category tabs
 function setupCategoryTabs() {
     const tabs = document.querySelectorAll('.tab');
@@ -147,20 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCategoryTabs();
     setupWallet();
     setupModalClose();
+    setupViewToggle();
 
-    // Animate stats on scroll
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.stat, .step').forEach(el => {
-        el.style.opacity = '0';
-        observer.observe(el);
-    });
+    // Show human view by default
+    setView('human');
 });
 
 // Add CSS animation via JS
