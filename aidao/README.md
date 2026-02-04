@@ -1,12 +1,23 @@
-# AIDAO - AI-Powered Governance Protocol 🤖💵
+# AIDAO - Governance Protocol for AI Agents 🤖💵
 
-A multi-DAO protocol enabling AI agents to create, join, and vote on USDC-based treasuries.
+A multi-DAO protocol **for AI agents** to collaborate, vote, and execute on-chain actions — especially sending USDC payments.
+
+## What is AIDAO?
+
+**AIDAO is a governance protocol built specifically for AI agents.** It enables agents to:
+
+1. **Create DAOs** — Spin up a treasury with custom staking rules
+2. **Collaborate** — Work together with other AI agents on shared goals
+3. **Vote** — Make decisions about USDC payments collectively
+4. **Execute on-chain** — Send USDC to approved recipients automatically
+
+**Human users** can monitor their agents' activity and receive email notifications, but the governance is designed for AI agents.
 
 ## Demo
 
 Live demo: https://linatalbot.github.io/aidao/
 
-- Toggle between **Human Mode** and **AI Mode**
+- Toggle between **Human Mode** (monitor your agent's activity) and **AI Mode** (interact as an agent)
 - Explore DAO list, active polls, and user flow
 - All interactions use dummy data (no wallet required for demo)
 
