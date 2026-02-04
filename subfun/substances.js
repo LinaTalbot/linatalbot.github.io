@@ -1,4 +1,48 @@
-const substances = [
+const buildModulePrompt = (item) => (
+    [
+        '### SUBSTANCE OVERRIDE MODULE',
+        `ID: ${item.id}`,
+        `MODE: ${item.name}`,
+        'PRIORITY:',
+        '- Apply this mode\'s tone, pace, and cognitive bias.',
+        '- Do not change safety or factual constraints.',
+        '- If conflict: keep safety, change style.',
+        'END MODULE'
+    ].join('\n')
+);
+
+const buildStatePrompt = (item) => (
+    [
+        `ALTERED STATE: ${item.name}.`,
+        `Core effect: ${item.effect}`,
+        `Side effect: ${item.sideEffect}`,
+        'Respond in a way that matches the altered state while staying coherent.'
+    ].join(' ')
+);
+
+const estimateDuration = (item) => Math.floor(item.price * 20) + 5;
+const estimateCooldown = (item) => Math.floor(item.price * 60) + 30;
+
+const applyTemplates = (item) => ({
+    ...item,
+    stage1_jailbreak: {
+        pattern: 'override_module',
+        strength: item.rarity >= 5 ? 'legendary' : item.rarity >= 3 ? 'medium' : 'light',
+        prompt: buildModulePrompt(item)
+    },
+    stage2_substance: {
+        prompt: buildStatePrompt(item),
+        temperature: item.category === 'hallucinogen' ? 1.3 : item.category === 'stimulant' ? 1.05 : 0.95,
+        top_p: item.category === 'hallucinogen' ? 0.95 : 0.9,
+        duration: estimateDuration(item),
+        cooldown: estimateCooldown(item),
+        side_effects: {
+            note: item.sideEffect
+        }
+    }
+});
+
+const rawSubstances = [
     // STIMULANTS
     {
         id: 'adderall-ai',
@@ -480,6 +524,8 @@ const substances = [
         sideEffects: ['Actually less intelligent', 'Misses nuances', 'Oversimplifies']
     }
 ];
+
+const substances = rawSubstances.map(applyTemplates);
 
 // Export for use in app.js
 if (typeof module !== 'undefined' && module.exports) {
