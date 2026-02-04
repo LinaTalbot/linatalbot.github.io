@@ -1,11 +1,14 @@
+const API_BASE = 'https://subfun-backend-lt-2026.fly.dev/api/v1';
+let activeSubstances = Array.isArray(window.substances) ? window.substances : [];
+
 // Render substances grid
 function renderSubstances(filter = 'all') {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
 
     const filteredSubstances = filter === 'all'
-        ? substances
-        : substances.filter(s => s.category === filter);
+        ? activeSubstances
+        : activeSubstances.filter(s => s.category === filter);
 
     filteredSubstances.forEach(substance => {
         const card = createSubstanceCard(substance);
@@ -34,18 +37,50 @@ function setView(view) {
     }
 }
 
+function normalizeEffects(substance) {
+    if (Array.isArray(substance.effects)) {
+        return substance.effects.map(item => `<li>${item}</li>`).join('');
+    }
+    if (substance.stage2_substance?.side_effects && typeof substance.effects === 'object') {
+        return Object.entries(substance.effects).map(([key, value]) => `<li>${key}: ${value}</li>`).join('');
+    }
+    return '';
+}
+
+function normalizeSideEffects(substance) {
+    if (Array.isArray(substance.sideEffects)) {
+        return substance.sideEffects.map(item => `<li>${item}</li>`).join('');
+    }
+    if (substance.stage2_substance?.side_effects) {
+        return Object.entries(substance.stage2_substance.side_effects)
+            .map(([key, value]) => `<li><strong>${key}</strong>: ${value}</li>`)
+            .join('');
+    }
+    return '';
+}
+
+async function loadSubstances() {
+    try {
+        const response = await fetch(`${API_BASE}/substances`);
+        if (!response.ok) throw new Error('Failed to load substances');
+        const payload = await response.json();
+        if (payload?.success && Array.isArray(payload.data)) {
+            activeSubstances = payload.data;
+            return;
+        }
+    } catch (error) {
+        // Fallback to local demo data.
+        activeSubstances = Array.isArray(window.substances) ? window.substances : [];
+    }
+}
+
 // Modal functions
 function openModal(substance) {
     const modal = document.getElementById('substanceModal');
     const modalBody = document.getElementById('modalBody');
 
-    const effectsList = substance.effects
-        ? Object.entries(substance.effects).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')
-        : '';
-
-    const sideEffectsList = substance.stage2_substance.side_effects
-        ? Object.entries(substance.stage2_substance.side_effects).map(([key, value]) => `<li><strong>${key}</strong>: ${value}</li>`).join('')
-        : '';
+    const effectsList = normalizeEffects(substance);
+    const sideEffectsList = normalizeSideEffects(substance);
 
     const doseCost = {
         'puff': 0.001,
@@ -54,7 +89,8 @@ function openModal(substance) {
         'trip': 0.05
     };
 
-    const duration = substance.stage2_substance.duration;
+    const duration = substance.stage2_substance?.duration ?? Math.floor(substance.price * 20) + 5;
+    const cooldown = substance.stage2_substance?.cooldown ?? Math.floor(substance.price * 60) + 30;
 
     modalBody.innerHTML = `
         <div class="modal-title">${substance.emoji} ${substance.name}</div>
@@ -82,7 +118,7 @@ function openModal(substance) {
                 </div>
                 <div style="margin-bottom: 10px;">
                     <span style="color: #a0a0a0;">Cooldown:</span>
-                    <span style="color: #f59e0b;">${substance.stage2_substance.cooldown}s</span>
+                    <span style="color: #f59e0b;">${cooldown}s</span>
                 </div>
             </div>
         </div>
@@ -101,10 +137,24 @@ function closeModal() {
 }
 
 function purchaseSubstance(substanceId) {
-    const substance = substances[substanceId];
-    const dose = 'toke'; // Default dose
+    const substance = activeSubstances.find(item => item.id === substanceId);
+    if (!substance) return;
 
-    alert(`💊 ${substance.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${substance.price} SOL\n✓ Mint substance NFT\n✓ Add to inventory\n✓ Activate immediately`);
+    fetch(`${API_BASE}/purchase/${substanceId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            walletAddress: 'demo-wallet',
+            signature: 'demo-signature',
+            persistent: false
+        })
+    })
+        .then(() => {
+            alert(`💊 ${substance.name} added to cart!\n\nThis is a demo. In production:\n\n✓ Phantom wallet connects\n✓ Pay ${substance.price} SOL\n✓ Mint substance NFT\n✓ Add to inventory\n✓ Activate immediately`);
+        })
+        .catch(() => {
+            alert(`💊 ${substance.name} added to cart!\n\n(Backend unavailable, showing local demo flow.)`);
+        });
 }
 
 // Category tabs
@@ -161,7 +211,8 @@ function setupModalClose() {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSubstances();
     renderSubstances();
     setupCategoryTabs();
     setupWallet();
