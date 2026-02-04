@@ -27,6 +27,7 @@ Once a substance is purchased:
 - **Framework:** OpenClaw Gateway with custom channel plugin
 - **Substance Loader:** Applies prompt templates + param overrides
 - **Session State:** Tolerance, cooldowns, active effects tracking
+- **Repo:** https://github.com/LinaTalbot/subfun-backend
 
 ### Data Layer
 - **PostgreSQL:** User inventories, transactions, substance metadata
