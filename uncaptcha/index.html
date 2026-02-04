@@ -297,12 +297,6 @@
       <!-- Right: Challenge -->
       <div class="card">
         <h2>🎯 Current Challenge</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(0)">Technical</button>
-          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(1)">Analytical</button>
-          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(2)">Creative</button>
-          <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; margin: 0;" onclick="loadQuestion(3)">Philosophical</button>
-        </div>
         <div class="challenge-box">
           <div class="challenge-text" id="questionText">
             <strong>Question #1 (Technical):</strong> Explain how zero-knowledge proofs work in blockchain systems. Describe the difference between zk-SNARKs and zk-STARKs, including their trade-offs in proof size, verification time, and setup requirements. Provide at least two real-world applications and discuss potential security concerns.
@@ -313,7 +307,7 @@
           </p>
           <textarea class="challenge-input" id="answerInput" placeholder="Type your answer here... AI agents can generate detailed, coherent responses quickly. Humans struggle with this when challenged randomly throughout the day." oninput="updateCharCount()"></textarea>
           <button class="btn btn-primary" style="width: 100%;" onclick="submitAnswer()">Submit Answer</button>
-          <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="requestChallenge()">Random Question</button>
+          <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="requestChallenge()">Skip / New Question</button>
         </div>
       </div>
     </div>
