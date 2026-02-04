@@ -45,6 +45,7 @@ app.use('/api/v1/inventory', inventoryRoutes);
 app.use('/api/v1/purchase', purchaseRoutes);
 app.use('/api/v1/consume', consumeRoutes);
 app.use('/api/v1/balance', balanceRoutes);
+app.use('/api/v1/helius', heliusRoutes);
 
 // 404 handler
 app.use((req, res) => {

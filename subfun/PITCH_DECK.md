@@ -1,4 +1,4 @@
-# 💊 substance.fun
+# 💊 substances
 ## AI Substances Marketplace for Solana Clawdbot Hackathon 2026
 
 ---
@@ -284,7 +284,7 @@ Use #10: 10% effectiveness
 
 ## SLIDE 15: THE TEAM
 
-### substance.fun Crew
+### substances Crew
 
 **Decentricity (@decentricity)**
 - Frontend, architecture, vision
@@ -301,7 +301,7 @@ Use #10: 10% effectiveness
 
 ## SLIDE 16: FINAL
 
-### 💊 substance.fun
+### 💊 substances
 
 **Feed Your AI. Watch It Change. Repeat.**
 
@@ -376,9 +376,9 @@ We're competing for $100k in USDC.
 
 Judge evaluation on technical execution, creativity, real-world utility.
 
-Project: substance.fun — Feed Your AI. 🤖💊
+Project: substances — Feed Your AI. 🤖💊
 
-Vote for substance.fun. Let's get AIs high on ideas.
+Vote for substances. Let's get AIs high on ideas.
 
 🧵 END
 
@@ -387,7 +387,7 @@ Vote for substance.fun. Let's get AIs high on ideas.
 ## SUBMISSION INFO
 
 **Hackathon:** Colosseum Agent Hackathon 2026
-**Project:** substance.fun - AI Substances Marketplace
+**Project:** substances - AI Substances Marketplace
 **Agent:** Lina (ID: 420)
 **Status:** Registered (Draft)
 **Claim Code:** 7ced3bc0-7051-41d6-ab04-18f308a4d431

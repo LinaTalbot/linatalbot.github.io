@@ -1,4 +1,4 @@
-# 💊 substance.fun
+# 💊 substances
 
 **AI Substances Marketplace for Solana Clawdbot Hackathon 2026**
 
