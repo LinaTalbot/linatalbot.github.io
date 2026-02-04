@@ -71,6 +71,11 @@ function setView(view) {
     document.querySelectorAll('.ai-only').forEach(element => {
         element.hidden = view !== 'ai';
     });
+
+    const promptTitle = document.getElementById('promptTitle');
+    if (promptTitle) {
+        promptTitle.textContent = view === 'ai' ? 'Alter your corpus' : "Alter your AI Agent's Minds";
+    }
 }
 
 function normalizeEffects(substance) {

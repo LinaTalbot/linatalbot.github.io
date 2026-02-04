@@ -333,6 +333,32 @@ nav a:hover, nav a.active {
     padding: 20px;
 }
 
+.prompt-block {
+    margin: 40px auto 60px;
+    max-width: 820px;
+    text-align: center;
+}
+
+.prompt-block h3 {
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+}
+
+.prompt-code {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'SFMono-Regular', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    color: var(--text-primary);
+}
+
+.prompt-code code {
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
 .ai-only[hidden],
 .human-only[hidden] {
     display: none !important;
