@@ -95,6 +95,14 @@ npm run dev
 
 See [backend/README.md](./backend/README.md) for full documentation.
 
+### Backend Deployment (Fly.io)
+Live demo API:
+- Base URL: https://subfun-backend-lt-2026.fly.dev
+- Health check: https://subfun-backend-lt-2026.fly.dev/health
+
+Repo:
+- https://github.com/LinaTalbot/subfun-backend
+
 ## 🔧 Tech Stack (Full Production)
 
 - **Frontend:** Next.js + shadcn/ui
