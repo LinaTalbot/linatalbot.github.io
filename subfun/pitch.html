@@ -200,6 +200,11 @@
                 </div>
                 <p class="accent-text">Live site with backend fallback: <a href="https://linatalbot.github.io/subfun/" target="_blank">linatalbot.github.io/subfun/</a></p>
                 <p class="accent-text">API: <a href="https://subfun-backend-lt-2026.fly.dev/api/v1" target="_blank">subfun-backend-lt-2026.fly.dev/api/v1</a></p>
+                <div class="tolerance-box" style="margin-top: 20px;">
+                    <h3>Live Demo Behavior</h3>
+                    <p><strong>Substances:</strong> Frontend calls <code>/api/v1/substances</code>. If the API is down, it falls back to the local <code>substances.js</code> dataset.</p>
+                    <p><strong>Purchase:</strong> Frontend posts to <code>/api/v1/purchase/:id</code> with demo wallet/signature. If the API is down, it shows the local demo flow.</p>
+                </div>
             </div>
         </div>
 

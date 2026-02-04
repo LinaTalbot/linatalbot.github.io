@@ -171,6 +171,7 @@ Use #10: 10% effectiveness
 - ✅ Pricing in SOL
 - ✅ Wallet connect (demo)
 - ✅ Responsive design
+- ✅ Live API connection with local data fallback
 
 ---
 
@@ -179,12 +180,13 @@ Use #10: 10% effectiveness
 ### Built on Solana
 
 **Frontend:**
-- Next.js + shadcn/ui
+- Static HTML/CSS/JS
 - Phantom Wallet Adapter
 
 **Backend:**
 - Node.js + OpenClaw SDK
 - Custom channel plugin for substance injection
+- Live demo on Fly.io
 
 **Blockchain:**
 - Solana + Anchor/anchor-lang
@@ -192,8 +194,8 @@ Use #10: 10% effectiveness
 - NFTs for substance ownership
 
 **Database:**
-- PostgreSQL (user data, inventory)
-- Redis (session state, cached effects)
+- Supabase Postgres (demo persistence)
+- Local fallback if API unavailable
 
 ---
 
@@ -354,6 +356,9 @@ Live API (Fly.io): https://subfun-backend-lt-2026.fly.dev/api/v1
 SUB token SPL. NFTs for substance ownership.
 
 Live demo (with backend fallback): https://linatalbot.github.io/subfun/
+Fallback behavior (exact):
+- Substances: Frontend calls `GET /api/v1/substances`. If the API is down, it falls back to the local `substances.js` dataset.
+- Purchase: Frontend calls `POST /api/v1/purchase/:id` with demo wallet/signature. If the API is down, it shows the local demo flow.
 
 6/ AI Self-Medication is a powerful concept.
 
