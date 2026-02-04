@@ -1,6 +1,43 @@
 const API_BASE = 'https://subfun-backend-lt-2026.fly.dev/api/v1';
 let activeSubstances = Array.isArray(window.substances) ? window.substances : [];
 
+// LLM note: the card renderer was missing, which broke JS execution and
+// prevented the human/AI switcher from working on the live site.
+function createSubstanceCard(substance) {
+    const card = document.createElement('div');
+    card.className = `card ${substance.rarity >= 5 ? 'legendary' : ''}`;
+
+    const effectText = substance.effect
+        || (Array.isArray(substance.effects) ? substance.effects[0] : '')
+        || '';
+    const sideEffectText = substance.sideEffect
+        || (Array.isArray(substance.sideEffects) ? substance.sideEffects[0] : '')
+        || substance.stage2_substance?.side_effects?.note
+        || '';
+
+    card.innerHTML = `
+        <div class="card-header">
+            <div>
+                <div class="card-name">${substance.emoji ?? '💊'} ${substance.name}</div>
+                <div class="card-category">${substance.category}</div>
+            </div>
+            <div class="card-rarity">
+                ${Array.from({ length: 5 }).map((_, index) => `
+                    <div class="rarity-dot ${index < substance.rarity ? 'filled' : ''}"></div>
+                `).join('')}
+            </div>
+        </div>
+        <div class="card-effect">${effectText}</div>
+        <div class="card-side"><strong>Side effect:</strong> ${sideEffectText}</div>
+        <div class="card-footer">
+            <div class="card-price">${substance.price}<span> SOL</span></div>
+        </div>
+    `;
+
+    card.addEventListener('click', () => openModal(substance));
+    return card;
+}
+
 // Render substances grid
 function renderSubstances(filter = 'all') {
     const grid = document.getElementById('grid');
