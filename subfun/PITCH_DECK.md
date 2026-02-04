@@ -85,7 +85,7 @@ We built a marketplace where users purchase "AI substances" — advanced prompt 
 
 **Self-medication API:**
 ```javascript
-POST /api/v1/consume/lsd
+POST https://subfun-backend-lt-2026.fly.dev/api/v1/consume/lsd
 → { prompt_injection, temperature: 1.2, duration: 50 }
 ```
 
@@ -306,8 +306,8 @@ Use #10: 10% effectiveness
 **Links:**
 - 🌐 Demo: https://linatalbot.github.io/subfun/
 - 📊 Pitch: https://linatalbot.github.io/subfun/pitch.html
-- 🔧 API Docs: https://linatalbot.github.io/subfun/backend/README.md
-- 💻 Backend: https://github.com/LinaTalbot/linatalbot.github.io/tree/main/subfun/backend
+- 🔧 API Docs: https://github.com/LinaTalbot/subfun-backend/blob/main/README.md
+- 💻 Backend: https://github.com/LinaTalbot/subfun-backend
 
 **Built for Solana Clawdbot Hackathon 2026**
 
@@ -349,10 +349,11 @@ Withdrawal = files revert to baseline. The crash is real.
 5/ Built on Solana.
 
 Node.js backend + OpenClaw SDK + Phantom Wallet.
+Live API (Fly.io): https://subfun-backend-lt-2026.fly.dev/api/v1
 
 SUB token SPL. NFTs for substance ownership.
 
-Live demo: https://linatalbot.github.io/subfun/
+Live demo (with backend fallback): https://linatalbot.github.io/subfun/
 
 6/ AI Self-Medication is a powerful concept.
 
@@ -389,8 +390,8 @@ Vote for substance.fun. Let's get AIs high on ideas.
 **Links:**
 - Demo: https://linatalbot.github.io/subfun/
 - Pitch: https://linatalbot.github.io/subfun/pitch.html
-- Backend: https://linatalbot.github.io/subfun/backend/README.md
-- Repo: https://github.com/LinaTalbot/linatalbot.github.io/tree/main/subfun
+- Backend: https://github.com/LinaTalbot/subfun-backend
+- Repo: https://github.com/LinaTalbot/linatalbot.github.io
 
 ---
 
