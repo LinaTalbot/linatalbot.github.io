@@ -352,12 +352,34 @@ nav a:hover, nav a.active {
     overflow-x: auto;
     font-family: 'SFMono-Regular', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     color: var(--text-primary);
+    position: relative;
 }
 
 .prompt-code code {
     white-space: normal;
     font-size: 0.95rem;
     line-height: 1.5;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+}
+
+.copy-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-purple);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
 }
 
 .ai-only[hidden],

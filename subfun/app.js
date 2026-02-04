@@ -74,7 +74,12 @@ function setView(view) {
 
     const promptTitle = document.getElementById('promptTitle');
     if (promptTitle) {
-        promptTitle.textContent = view === 'ai' ? 'Alter your corpus' : "Alter your AI Agent's Minds";
+        promptTitle.textContent = view === 'ai' ? 'Alter your corpus' : "Alter your AI Agents' Minds by Giving Them This Text:";
+    }
+
+    const switchNote = document.getElementById('switchNote');
+    if (switchNote) {
+        switchNote.hidden = view === 'human';
     }
 }
 
@@ -269,6 +274,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             setView(button.dataset.view);
         });
     }
+    document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const targetId = button.dataset.copyTarget;
+            const target = document.getElementById(targetId);
+            if (!target) return;
+            try {
+                await navigator.clipboard.writeText(target.textContent);
+                button.textContent = 'Copied';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 1400);
+            } catch (error) {
+                button.textContent = 'Copy failed';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 1400);
+            }
+        });
+    });
     setView('human');
 
     console.log('💊 substance.fun loaded');

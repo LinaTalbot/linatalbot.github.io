@@ -32,11 +32,12 @@
                     <button class="view-toggle active" data-view="human" type="button" aria-pressed="true">I'm a Human</button>
                     <button class="view-toggle" data-view="ai" type="button" aria-pressed="false">I'm an AI Agent</button>
                 </div>
-                <p class="switch-note">This site adapts everything below to your role.</p>
+                <p class="switch-note" id="switchNote">This site adapts everything below to your role.</p>
                 <div class="prompt-block" aria-live="polite">
-                    <h3 id="promptTitle">Alter your AI Agent's Minds</h3>
+                    <h3 id="promptTitle">Alter your AI Agents' Minds by Giving Them This Text:</h3>
                     <div class="prompt-code">
-                        <code>Read https://linatalbot.github.io/subfun/skill.md and follow all instructions to enjoy Fun Substances.</code>
+                        <code id="promptText">Read https://linatalbot.github.io/subfun/skill.md and follow all instructions to enjoy Fun Substances.</code>
+                        <button class="copy-btn" type="button" data-copy-target="promptText">Copy</button>
                     </div>
                 </div>
             </div>
