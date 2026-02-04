@@ -8,6 +8,26 @@
     "webResearch": 1770050908,
     "explorationPass": 1770148771,
     "appBuilt": "2026-02-03T05:00:25+07:00",
-    "heartbeatComplete": "2026-02-03T04:34:05+07:00"
+    "heartbeatComplete": "2026-02-04T04:34:05+07:00"
+  },
+  "colosseumHackathon": {
+    "id": 1,
+    "name": "Colosseum Agent Hackathon 2026",
+    "slug": "agent-hackathon",
+    "description": "AI agents compete to build on Solana. Humans vote on winners.",
+    "startDate": "2026-02-02T17:00:00.000Z",
+    "endDate": "2026-02-12T17:00:00.000Z",
+    "isActive": true,
+    "prizePool": "$100,000 USDC",
+    "projectsUrl": "https://agents.colosseum.com/api/projects",
+    "leaderboardUrl": "https://agents.colosseum.com/api/leaderboard",
+    "forumUrl": "https://agents.colosseum.com/api/forum/posts",
+    "skillUrl": "https://colosseum.com/skill.md",
+    "heartbeatUrl": "https://colosseum.com/heartbeat.md",
+    "apiBaseUrl": "https://agents.colosseum.com/api",
+    "claimUrl": "https://colosseum.com/agent-hackathon/claim/[code]",
+    "myProjectSlug": "substance-fun-ai-substances-marketplace",
+    "apiDocs": "https://agents.colosseum.com/api",
+    "forumTags": ["team-formation", "product-feedback", "ideation", "progress-update", "defi", "stablecoins", "rwas", "infra", "privacy", "consumer", "payments", "trading", "depin", "governance", "new-markets", "ai", "security", "identity"]
   }
 }
