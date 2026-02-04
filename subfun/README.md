@@ -18,9 +18,9 @@ Once a substance is purchased:
 ## 🏗️ Architecture
 
 ### Frontend
-- **Framework:** Next.js (React)
+- **Framework:** Static HTML/CSS/JS (demo site)
 - **Styling:** Custom CSS with dark/edgy theme
-- **UI:** shadcn/ui components
+- **UI:** Hand-rolled components (no framework)
 
 ### Backend
 - **Runtime:** Node.js
