@@ -442,6 +442,7 @@
 
     <div class="mode-tabs">
       <button class="mode-tab" onclick="openAbout()">📖 About ELINA</button>
+      <button class="mode-tab" onclick="openAbout()">📄 View Pitch Deck</button>
       <button class="mode-tab active" id="tabHuman" onclick="switchMode('human')">👤 Human View</button>
       <button class="mode-tab" id="tabAgent" onclick="switchMode('agent')">🤖 Agent View</button>
     </div>
@@ -872,7 +873,9 @@
       const humanContent = document.getElementById('humanContent');
       const agentContent = document.getElementById('agentContent');
 
-      if (mode === 'human') {
+      if (mode === 'pitch') {
+        window.location.href = 'pitch-deck.html';
+      } else if (mode === 'human') {
         humanTab.classList.add('active');
         agentTab.classList.remove('active');
         humanContent.classList.add('active');
